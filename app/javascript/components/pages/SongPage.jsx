@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import '@atlaskit/css-reset'
 import PropTypes from 'prop-types'
 
 const SongItem = styled.div`

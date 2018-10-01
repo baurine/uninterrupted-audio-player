@@ -2,6 +2,12 @@ import React from 'react'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 
+const Container = styled.div`
+  display: flex;
+
+  align-items: flex-start;
+`
+
 const SongsList = styled.ul`
   list-style-type: none;
   border: 1px solid lightgrey;
@@ -30,6 +36,7 @@ const PlayBtn = styled.a`
 `
 
 const CaseContainer = styled.div`
+  margin: 16px;
   padding: 8px;
   border: 1px solid lightgrey;
   width: 424px;
@@ -58,7 +65,7 @@ export default class SongsPage extends React.Component {
     const { songs } = this.props
     const firstSong = songs[0]
     return (
-      <React.Fragment>
+      <Container>
         <SongsList>
           {
             songs.map(song =>
@@ -73,21 +80,37 @@ export default class SongsPage extends React.Component {
           }
         </SongsList>
         <CaseContainer>
-          <span>special case 1 - event.stopPropagation()</span><br/><br/>
-          <span>this link execute event.stopPropagation() :</span>
+          <span>Special Case 1 - event.stopPropagation()</span><br/><br/>
+          <span>This link execute event.stopPropagation() :</span>
           <SongLink href={`/songs/${firstSong.id}`}
                     onClick={this.songClick1}>
             {firstSong.title}
           </SongLink>
           <br/><br/>
-          <span>resolution :</span>
+          <span>Resolution :</span>
           <SongLink href={`/songs/${firstSong.id}`}
                     onClick={this.songClick2}>
             {firstSong.title}
           </SongLink>
           <code>window.Turbolinks.visit(e.target.getAttribute('href') + '?click')</code>
+
+          <p>-----------------------------</p>
+          <span>Speical Case 2 - Form</span><br/><br/>
+          <span>Origin Form :</span>
+          <form action='/songs_query'>
+            <input type='text' name='song_id' placeholder='song id'></input>
+            <input type='submit' value='go'></input>
+          </form>
+
+          <br/><br/>
+          <span>data-remote Form :</span>
+          {/* the method must be 'post', can't be 'get' */}
+          <form action='/songs_query' data-remote={true} method='post'>
+            <input type='text' name='song_id' placeholder='song id'></input>
+            <input type='submit' value='go'></input>
+          </form>
         </CaseContainer>
-      </React.Fragment>
+      </Container>
     )
   }
 }

@@ -35,9 +35,23 @@ export default class AudioPlayer extends React.Component {
     }
   }
 
+  convertSeconds = (seconds) => {
+    if (seconds <= 0) return '--'
+
+    let mins = Math.floor(seconds / 60)
+    let secs = seconds % 60
+    if (mins < 10) {
+      mins = `0${mins}`
+    }
+    if (secs < 10) {
+      secs = `0${secs}`
+    }
+    return `${mins}:${secs}`
+  }
+
   progressStatus = () => {
     const { progress, duration } = this.state
-    return `${progress > 0 ? progress : '--'}/${duration > 0 ? duration : '--'}`
+    return `${this.convertSeconds(progress)}/${this.convertSeconds(duration)}`
   }
 
   //////////////////////////////////////////////////////////////

@@ -16,6 +16,11 @@ const AudioTitle = styled.span`
   padding: 8px;
 `
 
+const PlayBtn = styled.a`
+  padding: 8px;
+  cursor: pointer;
+`
+
 export default class AudioPlayer extends React.Component {
   constructor(props) {
     super(props)
@@ -123,7 +128,9 @@ export default class AudioPlayer extends React.Component {
 
     // recover state
     if (window._globalAudioState) {
-      this.setState(window._globalAudioState)
+      this.setState(window._globalAudioState, () => {
+        this.state.playing && this._setInterval()
+      })
     }
     // more: recover from localStorage
   }
@@ -169,7 +176,7 @@ export default class AudioPlayer extends React.Component {
         <span>{this.progressStatus()}</span>
         {
           progress > 0 &&
-          <span onClick={this.clickPlay}>{playing ? 'pause' : 'play'}</span>
+          <PlayBtn onClick={this.clickPlay}>{playing ? 'pause' : 'play'}</PlayBtn>
         }
         {
           loading &&

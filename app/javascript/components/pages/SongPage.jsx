@@ -21,11 +21,16 @@ const SongsLink = styled.a`
   padding: 8px;
 `
 
-const PlayBtn = styled.span`
+const PlayBtn = styled.a`
   padding: 8px;
+  cursor: pointer;
 `
 
 export default class SongPage extends React.Component {
+  playAudio = (song) => {
+    window.dispatchEvent(new CustomEvent('play-audio', {detail: song}))
+  }
+
   render() {
     const { song } = this.props
     return (
@@ -34,7 +39,7 @@ export default class SongPage extends React.Component {
         <SongTitle>{song.title}</SongTitle>
         <BtnContainer>
           <SongsLink href='/songs'>back to list</SongsLink>
-          <PlayBtn>play</PlayBtn>
+          <PlayBtn onClick={()=>this.playAudio(song)}>play</PlayBtn>
         </BtnContainer>
       </SongItem>
     )

@@ -19,12 +19,14 @@ const AudioTitle = styled.span`
 export default class AudioPlayer extends React.Component {
   constructor(props) {
     super(props)
+    this.intervalId = null
     this.state = {
       curAudio: null,
 
-      progress: null,
-      duration: null,
-      playing: false
+      progress: 0,
+      duration: 0,
+      playing: false,
+      loading: false,
     }
   }
 
@@ -33,8 +35,130 @@ export default class AudioPlayer extends React.Component {
     return `${progress > 0 ? progress : '--'}/${duration > 0 ? duration : '--'}`
   }
 
+  //////////////////////////////////////////////////////////////
+
+  onCanPlay = () => {
+    console.log('can play')
+    // get duration
+    const duration = Math.ceil(this.audioElement.duration)
+    this.setState({duration, loading: false})
+  }
+
+  onPlay = () => {
+    console.log('on play')
+    this.setState({ playing: true})
+    this._setInterval()
+  }
+
+  onPause = () => {
+    console.log('on pause')
+    this.setState({ playing: false })
+    this._clearInterval()
+  }
+
+  _setInterval() {
+    if (this.intervalId === null) {
+      this.intervalId = setInterval(() => {
+        const progress = Math.ceil(this.audioElement.currentTime)
+        this.setState({ progress })
+      }, 1000)
+    }
+  }
+
+  _clearInterval() {
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId)
+      this.intervalId = null
+    }
+  }
+
+  //////////////////////////////////////////////////////////////
+
+  playAudioEventHandler = (event) => {
+    const audio = event.detail
+    console.log('audio', audio)
+    if (!audio || !audio.audio_url) {
+      console.log('the audio has no url')
+      return
+    }
+    this.playNewAudio(audio)
+  }
+
+  playNewAudio = (audio) => {
+    this.audioElement.pause()
+    this.setState({
+      curAudio: audio,
+      playing: false,
+      duration: 0,
+      progress: 0,
+      loading: true,
+    }, () => this.loadSrc())
+  }
+
+  loadSrc = () => {
+    const { curAudio } = this.state
+    if (curAudio && curAudio.audio_url) {
+      this.audioElement.src = curAudio.audio_url
+      this.audioElement.load()
+      this.audioElement.play().catch(err => {
+        console.log(err)
+        this.setState({loading: false})
+      })
+    }
+  }
+
+  //////////////////////////////////////////////////////////////
+
+  componentDidMount() {
+    if (!window._globalAudioEl) {
+      window._globalAudioEl = document.createElement('audio')
+    }
+    this.audioElement =  window._globalAudioEl
+
+    this.audioElement.addEventListener('canplay', this.onCanPlay)
+    this.audioElement.addEventListener('play', this.onPlay)
+    this.audioElement.addEventListener('pause', this.onPause)
+
+    window.addEventListener('play-audio', this.playAudioEventHandler)
+
+    // recover state
+    if (window._globalAudioState) {
+      this.setState(window._globalAudioState)
+    }
+    // more: recover from localStorage
+  }
+
+  componentWillUnmount() {
+    // save current state to window before it is unmounted
+    window._globalAudioState = this.state
+    // more: store to localStorage
+
+    window.removeEventListener('play-audio', this.playAudioEventHandler)
+
+    this._clearInterval()
+
+    this.audioElement.removeEventListener('canplay', this.onCanPlay)
+    this.audioElement.removeEventListener('play', this.onPlay)
+    this.audioElement.removeEventListener('pause', this.onPause)
+
+    // don't pause it
+    // this.audioElement.pause()
+    this.audioElement = null
+  }
+
+  //////////////////////////////////////////////////////////////
+
+  clickPlay = () => {
+    const { playing } = this.state
+    if (playing) {
+      this.audioElement.pause()
+    } else {
+      this.audioElement.play()
+    }
+  }
+
   render() {
-    const { curAudio, progress, playing } = this.state
+    const { curAudio, progress, playing, loading } = this.state
 
     return (
       <Container>
@@ -45,7 +169,11 @@ export default class AudioPlayer extends React.Component {
         <span>{this.progressStatus()}</span>
         {
           progress > 0 &&
-          <span>{playing ? 'pause' : 'play'}</span>
+          <span onClick={this.clickPlay}>{playing ? 'pause' : 'play'}</span>
+        }
+        {
+          loading &&
+          <span>Loading...</span>
         }
       </Container>
     )

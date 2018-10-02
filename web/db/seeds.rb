@@ -6,7 +6,13 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
+Song.destroy_all
 Song.create([
+  {
+    title: 'test song',
+    cover_url: 'http://p1.music.126.net/54wdQi_3rpjreY2oo2jb7w==/5998935441219557.jpg',
+    audio_url: 'http://link.hhtjim.com/163/28285910.mp3'
+  },
   {
     title: '你在终点等我',
     cover_url: 'http://p1.music.126.net/ddhcDeGSl9VhXJLfOsNDEA==/3433774824740403.jpg',

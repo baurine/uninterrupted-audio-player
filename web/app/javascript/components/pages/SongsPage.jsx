@@ -43,6 +43,13 @@ const CaseContainer = styled.div`
 `
 
 export default class SongsPage extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      queryStr: ''
+    }
+  }
+
   playAudio = (song) => {
     window.dispatchEvent(new CustomEvent('play-audio', {detail: song}))
   }
@@ -59,6 +66,15 @@ export default class SongsPage extends React.Component {
     // necessary
     e.preventDefault()
     window.Turbolinks.visit(e.target.getAttribute('href') + '?click')
+  }
+
+  queryUrl = () => {
+    return `/songs?q=${this.state.queryStr}`
+  }
+
+  submitQuery = (e) => {
+    e.preventDefault()
+    window.Turbolinks.visit(this.queryUrl())
   }
 
   render() {
@@ -95,19 +111,43 @@ export default class SongsPage extends React.Component {
           <code>window.Turbolinks.visit(e.target.getAttribute('href') + '?click')</code>
 
           <p>-----------------------------</p>
-          <span>Speical Case 2 - Form</span><br/><br/>
-          <span>Origin Form :</span>
-          <form action='/songs_query'>
-            <input type='text' name='song_id' placeholder='song id'></input>
-            <input type='submit' value='go'></input>
+          <span>Speical Case 2 - Get Form</span><br/><br/>
+          <span>Origin Get Form :</span>
+          <form action='/songs'>
+            <input type='text' name='q' placeholder='song title'></input>
+            <input type='submit' value='search'></input>
           </form>
 
-          <br/><br/>
+          <span>Resolution 1 :</span>
+          <form action='/songs' onSubmit={this.submitQuery}>
+            <input type='text'
+                   name='q'
+                   placeholder='song title'
+                   value={this.state.queryStr}
+                   onChange={e=>this.setState({queryStr:e.target.value})}></input>
+            <input type='submit' value='search'></input>
+          </form>
+
+          <span>Resolution 2 :</span>
+          <div>
+            <input type='text'
+                   placeholder='song title'
+                   value={this.state.queryStr}
+                   onChange={e=>this.setState({queryStr:e.target.value})}></input>
+            <a href={this.queryUrl()}>search</a>
+          </div>
+
+          <p>-----------------------------</p>
+          <span>Speical Case 3 - Post Form</span><br/><br/>
           <span>data-remote Form :</span>
           {/* the method must be 'post', can't be 'get' */}
-          <form action='/songs_query' data-remote={true} method='post'>
-            <input type='text' name='song_id' placeholder='song id'></input>
-            <input type='submit' value='go'></input>
+          <form action='/songs/1' data-remote={true} method='post'>
+            <input type='text'
+                   name='title'
+                   placeholder='new song title'
+                   defaultValue={firstSong.title}>
+            </input>
+            <input type='submit' value='update'></input>
           </form>
         </CaseContainer>
       </Container>

@@ -6,9 +6,18 @@ This solution is for traditional none frontend-backend divided website.
 
 ![](./art/uninterrupt-audio-player.gif)
 
+
+## Run
+
+1. clone the repo
+1. bundle & yarn install
+1. bin/rails db:create
+1. bin/rails db:seed
+1. bin/rails s
+
 ## Notes
 
-// TODO
+- [Uninterrupt audio player by turbolinks Note](./notes/uninterrupted-audio-player-note.md)
 
 ## Thanks
 

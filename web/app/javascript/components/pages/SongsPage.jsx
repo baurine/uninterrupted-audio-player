@@ -67,10 +67,7 @@ export default class SongsPage extends React.Component {
   }
 
   songClick2 = (e) => {
-    // not necessary, because turbolinks won't handle the event which has prevented default
     e.stopPropagation()
-
-    // necessary
     e.preventDefault()
     window.Turbolinks.visit(e.target.getAttribute('href') + '?click')
   }
@@ -132,7 +129,6 @@ export default class SongsPage extends React.Component {
           <span>Resolution 1 : use window.Turoblinks.visit API</span>
           <form action='/songs' onSubmit={this.submitQuery}>
             <input type='text'
-                   name='q'
                    placeholder='song title'
                    value={this.state.queryStr}
                    onChange={e=>this.setState({queryStr:e.target.value})}></input>
@@ -171,7 +167,7 @@ export default class SongsPage extends React.Component {
           <br/>
 
           <span>Resolution: data-remote Form</span>
-          <form action={`/songs/${firstSong.id}`} data-remote={true} method='post'>
+          <form action={`/songs/${firstSong.id}`} data-remote method='post'>
             <input type="hidden" name="_method" value="put"></input>
             <input type='text'
                    name='title'

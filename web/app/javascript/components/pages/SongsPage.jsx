@@ -46,8 +46,15 @@ export default class SongsPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      queryStr: ''
+      queryStr: '',
+      authenToken: ''
     }
+  }
+
+  componentDidMount() {
+    const authenToken = 
+      document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    this.setState({authenToken})
   }
 
   playAudio = (song) => {
@@ -108,17 +115,21 @@ export default class SongsPage extends React.Component {
                     onClick={this.songClick2}>
             {firstSong.title}
           </SongLink>
+          <br/>
           <code>window.Turbolinks.visit(e.target.getAttribute('href') + '?click')</code>
 
           <p>-----------------------------</p>
-          <span>Speical Case 2 - Get Form</span><br/><br/>
+          <p>Speical Case 2 - Get Form</p>
+
           <span>Origin Get Form :</span>
           <form action='/songs'>
             <input type='text' name='q' placeholder='song title'></input>
             <input type='submit' value='search'></input>
           </form>
 
-          <span>Resolution 1 :</span>
+          <br/>
+
+          <span>Resolution 1 : use window.Turoblinks.visit API</span>
           <form action='/songs' onSubmit={this.submitQuery}>
             <input type='text'
                    name='q'
@@ -128,7 +139,9 @@ export default class SongsPage extends React.Component {
             <input type='submit' value='search'></input>
           </form>
 
-          <span>Resolution 2 :</span>
+          <br/>
+
+          <span>Resolution 2 : convert form to link</span>
           <div>
             <input type='text'
                    placeholder='song title'
@@ -138,10 +151,28 @@ export default class SongsPage extends React.Component {
           </div>
 
           <p>-----------------------------</p>
-          <span>Speical Case 3 - Post Form</span><br/><br/>
-          <span>data-remote Form :</span>
-          {/* the method must be 'post', can't be 'get' */}
-          <form action='/songs/1' data-remote={true} method='post'>
+          <p>Speical Case 3 - Post Form</p>
+
+          <span>Origin Post Form :</span>
+          <form action={`/songs/${firstSong.id}`} method='post'>
+            {/* https://stackoverflow.com/questions/8054165/using-put-method-in-html-form */}
+            <input type="hidden" name="_method" value="put"></input>
+            <input type="hidden"
+                   name="authenticity_token"
+                   value={this.state.authenToken}/>
+            <input type='text'
+                   name='title'
+                   placeholder='new song title'
+                   defaultValue={firstSong.title}>
+            </input>
+            <input type='submit' value='update'></input>
+          </form>
+
+          <br/>
+
+          <span>Resolution: data-remote Form</span>
+          <form action={`/songs/${firstSong.id}`} data-remote={true} method='post'>
+            <input type="hidden" name="_method" value="put"></input>
             <input type='text'
                    name='title'
                    placeholder='new song title'
